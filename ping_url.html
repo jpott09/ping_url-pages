@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ATTENTION: README!-->
+    <!-- ATTENTION: README!-->
+    <!-- ATTENTION: README!-->
+    <!-- SEARCH THIS FILE FOR TODO or IMPORTANT and set the php url to point at the ping_url.php file in your directory.-->
+    <!-- ATTENTION: README!-->
+    <!-- ATTENTION: README!-->
+    <!-- ATTENTION: README!-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- prevent caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Ping Utility</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #191919;
+            color: #cacaca;
+        }
+        h1 {
+            color: #afafaf;
+        }
+        p {
+            color: #666;
+        }
+        label {
+            color: #000000;
+        }
+        input {
+            color: #181818;
+            background-color: rgb(255, 255, 255);
+            padding:5px;
+            margin: 5px;
+            margin-right: 0;
+            border: 1px solid rgb(0, 0, 0);
+            border-radius: 5px 0px 0px 5px;
+            width: 85%;
+            min-width: 300px;
+        }
+        /* url entry */
+        .btn {
+            color: #ffffff;
+            background-color: #6b6b6b;
+            border: 1px solid #1b0f00;
+            padding: 5px;
+            margin: 5px;
+            margin-left: 0;
+            cursor: pointer;
+            width: 15%;
+        }
+        .btn:hover {
+            background-color: #bc6b00;
+        }
+        .btn-right {
+            border-radius: 0px 5px 5px 0px;
+        }
+        .div-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .div-info {
+            flex-direction: column;
+            background-color: rgb(229, 229, 229);
+            color: rgb(58, 58, 58);
+            max-width: 600px;
+            border-radius: 15px;
+            padding: 10px;
+        }
+        .div-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .div-info-wrapper {
+            margin-top:8px;
+            margin-bottom: 5px;
+            background-color: rgb(90, 90, 90);
+            border-radius: 5px;
+        }
+        .label-info {
+            text-align: center;
+            justify-content: center;
+            color: white;
+            font-size: 10pt;
+            margin: 3px;
+            padding: 5px;
+        }
+        /* settings */
+        .div-settings {
+            display:flex;
+            flex-direction:row;
+            width:100%;
+            margin-top: 10px;
+        }
+        /* tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            width:100%;
+            margin: 0;
+            padding: 0;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 150px;
+            background-color: rgb(200,200,200);
+            font-size: 11pt;
+            color: #151515;
+            text-align: center;
+            border: 1px solid #363636;
+            border-radius: 5px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%; /* Position the tooltip above the label */
+            left: 50%;
+            margin-left: -75px; /* Adjust to center */
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        /* interval */
+        .interval-column {
+            width: 15%;
+            background-color: #181818;
+            border: 1px solid gray;
+            border-radius: 3px;
+        }
+        .div-settings label{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            color:white;
+            background-color: #181818;
+            font-size: 10pt;
+            margin:0px;
+            padding: 0;
+            pointer-events: none;
+            width: 100%;
+            overflow: hidden;
+        }
+        .div-settings select{
+            margin: 0;
+            width:100%;
+            font-size: 10pt;
+            color:white;
+            background-color: #191919;
+            border-radius: 3px;
+            padding: 3px;
+            text-align-last: center;
+        }
+        .div-settings select:hover{
+            background-color: #bc6b00;
+            cursor: pointer;
+        }
+        .div-settings select:focus{
+            background-color: #191919;
+        }
+        /* generated url elements */
+        .url-element-parent-div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 25px;
+        }
+        .url-element-div {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            margin: 5px;
+            padding: 5px;
+            background-color: rgb(45, 45, 45);
+            border-radius: 5px;
+            width: 100%;
+        }
+        .url-span-title {
+            color: rgb(206, 239, 255);
+        }
+        .url-span-info {
+            color: #ababab;
+        }
+        .span-url {
+            width: 50%;
+        }
+        .span-status {
+            width: 10%;
+        }
+        .span-code {
+            width: 10%;
+        }
+        .span-time {
+            width: 15%;
+        }
+        .span-remove {
+            width: 15%;
+            /* center the text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+        .button-element-remove {
+            color: #ffffff;
+            background-color: #6b6b6b;
+            border: 1px solid #1b0f00;
+            padding: 5px;
+            margin: 0;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 15%;
+        }
+        .button-element-remove:hover {
+            background-color: #bc6b00;
+        }
+    </style>
+</head>
+<body>
+    <div class="div-center">
+        <!-- Header -->
+        <h1>Ping Utility</h1>
+        <div class="div-info div-center">
+            <!-- URL ENTRY -->
+            <label>Enter a URL</label>
+            <div class="div-row">
+                <input type="text" id="url" placeholder="https://www.example.com">
+                <button id="button_add" class="btn btn-right">Add</button>
+            </div>
+            <div class="div-row">
+                <div class="div-info-wrapper">
+                    <label id="url_info" class="label-info">Info: Use the complete URL for accurate results</label>
+                </div>
+            </div>
+        </div>
+        <!-- Settings -->
+        <div class="div-center div-settings">
+            <!-- interval -->
+            <div class="div-column interval-column">
+                <div class="tooltip">
+                    <label for="interval_options">Update Interval</label>
+                    <span class="tooltip-text">The interval at which sites will be pinged for a status code.</span>
+                </div>
+                <select id="interval_options" name="interval_options">
+                    <option value="5" selected>5 second</option>
+                    <option value="10">10 seconds</option>
+                    <option value="15">15 seconds</option>
+                    <option value="30">30 seconds</option>
+                    <option value="60">1 minutes</option>
+                    <option value="120">2 minutes</option>
+                    <option value="300">5 minutes</option>
+                    <option value="600">10 minutes</option>
+                    <option value="90">15 minutes</option>
+                    <option value="1800">30 minutes</option>
+                    <option value="3600">60 minutes</option>
+                </select>
+            </div>
+            <!-- Prepend -->
+            <div class="div-column interval-column">
+                <div class="tooltip">
+                    <label for="prepend_options">Auto Prepend</label>
+                    <span class="tooltip-text">'Curl' is used to make these requests, and demands a fully qualified url.  This is the value added when 'http' is not found in the string.</span>
+                </div>
+                
+                <select id="prepend_options" name="prepend_options">
+                    <option value="none">None</option>
+                    <option value="http://" selected>http://</option>
+                    <option value="https://">https://</option>
+                    <option value="http://www.">http://www.</option>
+                    <option value="https://www.">https://www.</option>
+                </select>
+            </div>
+            <!-- Timout -->
+            <div class="div-column interval-column">
+                <div class="tooltip">
+                    <label for="timeout_options">Timeout</label>
+                    <span class="tooltip-text">The time waited before a timeout exception occurs.  Too short and false-negatives occur.  Too high and updates take a long time.</span>
+                </div>
+                <select id="timeout_options" name="timeout_options">
+                    <option value="3">3 seconds</option>
+                    <option value="5" selected>5 seconds</option>
+                    <option value="8">8 seconds</option>
+                    <option value="10">10 seconds</option>
+                    <option value="15">15 seconds</option>
+                    <option value="20">20 seconds</option>
+                    <option value="30">30 seconds</option>
+                    <option value="45">45 seconds</option>
+                    <option value="60">1 minute</option>
+                    <option value="120">2 minutes</option>
+                </select>
+            </div>
+            <!-- Stop Ping on Up -->
+            <div class="div-column interval-column">
+                <div class="tooltip">
+                    <label for="ping_options">Re-Ping</label>
+                    <span class="tooltip-text">This settings determines if sites reported as 'Up' will continue to be pinged.  By default, only sites reported as 'Down' will be pinged every update interval.</span>
+                </div>
+                <select id="ping_options" name="ping_options">
+                    <option value="False" selected>Only 'Down'</option>
+                    <option value="True">'Up' and 'Down'</option>
+                </select>
+            </div>
+        </div>
+        <!-- Procedural content -->
+        <div id="url_parent_div" class="url-element-parent-div">
+        </div>
+    </div>
+    <script type="module">
+        // CLASSES --------------------------------------------------- CLASSES -- //
+        // IMPORTANT: CHANGE THIS PATH TO POINT AT YOUR PHP SCRIPT
+        // TODO: Change this path to point at your php script
+        const php_url = 'ping_url.php';
+        class Loop {
+            constructor(delay_seconds, callback, callback_async=false, check_frequency = 1000,auto_start=true) {
+                this.delay = delay_seconds * 1000;
+                this.callback = callback;
+                this.running = false;
+                this.callback_async = callback_async;
+                this.check_frequency = check_frequency;
+                if(auto_start){this.start();};
+            }
+            async start() {
+                this.running = true;
+                await this.loop();
+            }
+            async loop() {
+                let lastExecution = Date.now();
+
+                while (this.running) {
+                    let now = Date.now();
+
+                    if (now - lastExecution >= this.delay) {
+                        try{
+                            if(this.callback_async){
+                                await this.callback();
+                            }else{
+                                this.callback();
+                            }
+                        }catch(e){
+                            console.log("Error in Loop.loop() callback: " + e);
+                        }
+                        lastExecution = now;
+                    }
+
+                    // Sleep for check_frequency time before checking again
+                    await this.sleep(this.check_frequency);
+                }
+            }
+            stop() {
+                this.running = false;
+            }
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            changeDelay(delay_seconds){
+                this.delay = delay_seconds * 1000;
+            }
+        }
+        class Ping{
+            constructor(parent_div,php_url){
+                this.php_url = php_url;
+                this.parent_div = parent_div;
+                this.url_list = [];
+                this.update_interval_seconds = 5;
+                this.ping_all = this.ping_all.bind(this);
+                this.loop = new Loop(this.update_interval_seconds, this.ping_all, 1000, true);
+                this.auto_prepend_string = "http://";
+                this.timeout_seconds = 5;
+                this.ping_up = false;
+                // create url titles
+                this.create_line('URL','Status','Code','Time',true);
+            }
+            set_ping_up(ping_up){
+                // evaluate 'true' 'True' 'false' 'False' to boolean
+                if(ping_up === 'true' || ping_up === 'True' || ping_up === true){
+                    console.log('ping_up is true');
+                    this.ping_up = true;
+                    return;
+                }
+                console.log('ping_up is false');
+                this.ping_up = false;
+            }
+            set_status(url,status){
+                // set status of url
+                let div = document.getElementById(url);
+                if(div === null){
+                    console.log('set_status() Unable to set status with url: '+url);
+                    return;
+                }
+                let span_status = document.getElementById('span_status_'+url);
+                span_status.innerHTML = status;
+            }
+            set_update_interval_seconds(update_interval_seconds){
+                // set update interval seconds
+                let interval_int = parseInt(update_interval_seconds);
+                if(isNaN(interval_int)){
+                    console.log('update_interval_seconds is NaN');
+                    return;
+                }
+                console.log('update_interval_seconds is '+interval_int);
+                this.update_interval_seconds = interval_int;
+                this.loop.changeDelay(this.update_interval_seconds);
+            }
+            set_auto_prepend_string(auto_prepend_string){
+                // set auto prepend string
+                if(auto_prepend_string === null || auto_prepend_string === 'none' || auto_prepend_string === 'None'){
+                    this.auto_prepend_string = null;
+                    console.log('auto_prepend_string is set to null');
+                    return;
+                }
+                console.log('auto_prepend_string set: '+auto_prepend_string);
+                this.auto_prepend_string = auto_prepend_string;
+            }
+            set_timeout_seconds(timeout_seconds){
+                // set timeout seconds
+                let default_timeout = 5;
+                let timeout_int = parseInt(timeout_seconds);
+                if(isNaN(timeout_int)){
+                    this.timeout_seconds = default_timeout;
+                    console.log('timeout_seconds is NaN and set to default '+default_timeout);
+                    return;
+                }
+                console.log('timeout_seconds set: '+timeout_int);
+                this.timeout_seconds = timeout_int;
+            }
+            add_url(url){
+                // return new url string if added
+                // return 1 if already exists
+                // return 2 if url is empty
+                // return 3 if url is null
+                // return 4 if url is invalid
+                url = this.prepend_string(url);
+                if(url === ''){
+                    return 2;
+                }
+                if(url === null){
+                    return 3;
+                }
+                if(url.indexOf('.') === -1){
+                    return 4;
+                }
+                let exists = false;
+                this.url_list.forEach((element) => {
+                    if(element === url){
+                        exists = true;
+                    }
+                });
+                if(!exists){
+                    this.url_list.push(url);
+                    this.create_line(url,'Pending','Pending',this.get_time_string(),false);
+                    return url;
+                }
+                return 1;
+            }
+            remove_url(url){
+                this.url_list = this.url_list.filter((element) => {
+                    return element !== url;
+                });
+            }
+            get_time_string(){
+                let date = new Date();
+                let hours = date.getHours();
+                let minutes = date.getMinutes();
+                let seconds = date.getSeconds();
+                // pad with 0 if less than 10
+                if(hours < 10){hours = '0'+hours;}
+                if(minutes < 10){minutes = '0'+minutes;}
+                if(seconds < 10){seconds = '0'+seconds;}
+                return hours+':'+minutes+':'+seconds;
+            }
+            async ping_url(url){
+                // check if ping_up is false
+                if(!this.ping_up){
+                    // check if the url was already reported as up
+                    let data = this.get_line_info(url);
+                    if(data.status === 'Up'){
+                        console.log('ping_url() ping_up is false and url is up');
+                        return;
+                    }
+                }
+                // set status to pending
+                this.update_line(url,'Pending','Pending',this.get_time_string());
+                // send post and log
+                let params = {"url":url,"timeout":this.timeout_seconds};
+                console.log("ping_url() params: "+JSON.stringify(params));
+                let response = await ajaxPost(this.php_url,params);
+                console.log("ping_url() response: "+JSON.stringify(response));
+                try{
+                    let code = response.code;
+                    if(this.is_code_up(code)){
+                        console.log('Code is up: '+code);
+                        this.update_line(url,'Up',code,this.get_time_string());
+                        return;
+                    }
+                }catch(e){
+                    if(is_error(response)){
+                        console.log('Error: '+response.error);
+                    }else{
+                        console.log('Error: '+e);
+                    }
+                }
+                console.log('Code is down');
+                this.update_line(url,'Down',"N/A",this.get_time_string());
+                return;
+            }
+            async ping_all(){
+                try{
+                    const promises = this.url_list.map(url => this.ping_url(url));
+                    await Promise.all(promises);
+                    console.log('ping_all(): Promises resolved at: '+this.get_time_string());
+                }catch(e){
+                    console.log('ping_all(): Error: '+e);
+                }
+                
+            }
+            update_line(url, status, code){
+                // find the div with the url id
+                let div = document.getElementById(url);
+                if(div === null){
+                    console.log('Unable to update line with url: '+url);
+                    return;
+                }
+                // find the spans with the url id
+                let span_status = document.getElementById('span_status_'+url);
+                let span_code = document.getElementById('span_code_'+url);
+                let span_time = document.getElementById('span_time_'+url);
+                // update the spans
+                span_status.innerHTML = status;
+                span_code.innerHTML = code;
+                span_time.innerHTML = this.get_time_string();
+            }
+            get_line_info(url){
+                // find the line with the url id. Return the code, status, and time
+                let div = document.getElementById(url);
+                let data = {
+                    'code':null,
+                    'status':null,
+                    'time':null
+                };
+                if(div === null){
+                    console.log('get_line_info() Unable to get line info with url: '+url);
+                    return data;
+                }
+                let span_status = document.getElementById('span_status_'+url);
+                let span_code = document.getElementById('span_code_'+url);
+                let span_time = document.getElementById('span_time_'+url);
+                data.code = span_code.innerHTML;
+                data.status = span_status.innerHTML;
+                data.time = span_time.innerHTML;
+                console.log("get_line_info() returning data for " + url + ": " + JSON.stringify(data));
+                return data;
+            }
+            create_line(url, status, code, time, is_info=false){
+                // create container div
+                let div = document.createElement('div');
+                div.classList.add('url-element-div');
+                div.id = url;
+                // create url span
+                let span_url = document.createElement('span');
+                if(is_info){span_url.classList.add('url-span-info');}
+                else{span_url.classList.add('url-span-title');}
+                span_url.classList.add('span-url');
+                span_url.id="span_url_"+url;
+                span_url.innerHTML = url;
+                // create status span
+                let span_status = document.createElement('span');
+                if(is_info){span_url.classList.add('url-span-info');}
+                else{span_url.classList.add('url-span-title');}
+                span_status.classList.add('span-status');
+                span_status.id="span_status_"+url;
+                span_status.innerHTML = status;
+                // create code span
+                let span_code = document.createElement('span');
+                if(is_info){span_url.classList.add('url-span-info');}
+                else{span_url.classList.add('url-span-title');}
+                span_code.classList.add('span-code');
+                span_code.id="span_code_"+url;
+                span_code.innerHTML = code;
+                // create time span
+                let span_time = document.createElement('span');
+                if(is_info){span_url.classList.add('url-span-info');}
+                else{span_url.classList.add('url-span-title');}
+                span_time.classList.add('span-time');
+                span_time.id="span_time_"+url;
+                span_time.innerHTML = time;
+                // create either button or span
+                let span_remove = null;
+                if(is_info){
+                    span_remove = document.createElement('span');
+                    span_remove.classList.add('url-span-info');
+                    span_remove.classList.add('span-remove');
+                    span_remove.innerHTML = 'Manage';
+                    span_remove.id="span_remove_"+url;
+                }else{
+                    span_remove = document.createElement('button');
+                    span_remove.classList.add('button-element-remove');
+                    // add the hover effect
+                    span_remove.classList.add('button-element-remove-hover');
+                    span_remove.innerHTML = 'Remove';
+                    span_remove.id="button_remove_"+url;
+                    span_remove.addEventListener('click', () => {
+                        this.remove_url(url);
+                        this.parent_div.removeChild(div);
+                    });
+                }
+                // append spans and span_remove element to div
+                div.appendChild(span_url);
+                div.appendChild(span_status);
+                div.appendChild(span_code);
+                div.appendChild(span_time);
+                div.appendChild(span_remove);
+                // append div to parent div
+                this.parent_div.appendChild(div);
+            }
+            is_code_up(code){
+                // if code is not an integer, return false
+                if(isNaN(code)){
+                    return false;
+                }
+                // if code is undefined, return false
+                if(code === undefined){
+                    return false;
+                }
+                let code_int = parseInt(code);
+                if(code_int >= 500 && code_int <= 508){
+                    return false;
+                }
+                if(code_int >= 510 && code_int <= 511){
+                    return false;
+                }
+                return true;
+            }
+            prepend_string(url){
+                if(url.indexOf('http') === -1){
+                    // make sure auto_prepend_string is not null, 'none' or 'None'
+                    if(this.auto_prepend_string === null || this.auto_prepend_string === 'none' || this.auto_prepend_string === 'None'){
+                        return url;
+                    }
+                    return this.auto_prepend_string+url;
+                }
+                return url;
+            }
+        }
+        // FUNCTIONS ----------------------------------------------- FUNCTIONS -- //
+
+        function set_url_info(element,text){
+            element.innerHTML = "Info: "+text;
+        }
+        function clear_input(element){
+            element.value = '';
+        }
+        function is_error(response){
+            if(response === null){
+                return true;
+            }
+            try{
+                if(response.error){
+                    console.log('is_error() Error from server: '+response.error);
+                    return true;
+                }
+            }catch(e){
+                console.log("No error in response");
+            }
+            return false;
+        }
+        async function ajaxGet(url,params){
+            if(params !== null){
+                let searchParams = new URLSearchParams(params).toString();
+                url = url+'?'+searchParams;
+                console.log('ajaxGet() url with params: '+url);
+            }
+            try{
+                let response = await fetch(url);
+                return await response.json();
+            }catch(e){
+                console.log('Error: '+e);
+                return null;
+            }
+        }
+        async function ajaxPost(url, data){
+            console.log("ajaxPost() url: " + url);
+            console.log("ajaxPost() data: " + JSON.stringify(data));
+            try{
+                let response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                return await response.json();
+            }catch(e){
+                console.log('Error: '+e);
+                return null;
+            }
+        }
+        // MAIN --------------------------------------------------------- MAIN -- //
+        document.addEventListener('DOMContentLoaded', async function() {
+            // grab elements
+            const url = document.getElementById('url');
+            const add_button = document.getElementById('button_add');
+            const url_info = document.getElementById('url_info');
+            const url_parent_div = document.getElementById('url_parent_div');
+            // drop down selects for settings
+            const select_interval = document.getElementById('interval_options');
+            const select_prepend = document.getElementById('prepend_options');
+            const select_timeout = document.getElementById('timeout_options');
+            const select_ping_up = document.getElementById('ping_options');
+            // instantiate classes
+            const ping = new Ping(url_parent_div,php_url);
+
+            // EVENT LISTENERS
+            select_interval.addEventListener('change', async function() {
+                let interval = select_interval.value;
+                ping.set_update_interval_seconds(parseInt(interval));
+                set_url_info(url_info,'Interval set to: '+interval+' seconds');
+            });
+            select_prepend.addEventListener('change', async function() {
+                let prepend = select_prepend.value;
+                ping.set_auto_prepend_string(prepend);
+                set_url_info(url_info,'Prepend set to: '+prepend);
+            });
+            select_timeout.addEventListener('change', async function() {
+                let timeout = select_timeout.value;
+                ping.set_timeout_seconds(parseInt(timeout));
+                set_url_info(url_info,'Timeout set to: '+timeout+' seconds');
+            });
+            select_ping_up.addEventListener('change', async function() {
+                let ping_up = select_ping_up.value;
+                let ping_bool = false;
+                if(ping_up === 'true' || ping_up === 'True'){
+                    ping_bool = true;
+                }
+                ping.set_ping_up(ping_bool);
+                set_url_info(url_info,'Ping up set to: '+ping_up);
+            });
+            url.addEventListener('keypress', async function(e) {
+                if (e.key === 'Enter') {
+                    let url_string = url.value;
+                    let response = ping.add_url(url_string);
+                    if(isNaN(response)){
+                        url_string = response;
+                        set_url_info(url_info,'URL added: '+url_string);
+                        ping.ping_url(url_string);
+                        clear_input(url);
+                    }else if(response === 1){
+                        set_url_info(url_info,'URL already added: '+url.value);
+                    }else if(response === 2){
+                        set_url_info(url_info,'URL cannot be empty');
+                    }else if(response === 3){
+                        set_url_info(url_info,'URL cannot be null');
+                    }else if(response === 4){
+                        set_url_info(url_info,'URL is invalid. URL must contain at least one "."');
+                    }else{
+                        set_url_info(url_info,'Undefined set_url_info() response');
+                    }
+                }
+            });
+            add_button.addEventListener('click', async function() {
+                let response = ping.add_url(url.value);
+                if(response === 0){
+                    set_url_info(url_info,'URL added: '+url.value);
+                    clear_input(url);
+                }else if(response === 1){
+                    set_url_info(url_info,'URL already added');
+                }else if(response === 2){
+                    set_url_info(url_info,'URL cannot be empty');
+                }else if(response === 3){
+                    set_url_info(url_info,'URL cannot be null');
+                }else if(response === 4){
+                    set_url_info(url_info,'URL is invalid. Must contain "http" and at least one "."');
+                }else{
+                    set_url_info(url_info,'Undefined set_url_info() response');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
